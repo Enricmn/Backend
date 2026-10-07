@@ -1,2 +1,4 @@
 node_modules/
 Docker/.env
+api/node_modules/
+api/.env
