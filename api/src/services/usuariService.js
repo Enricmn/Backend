@@ -1,9 +1,12 @@
-// Importa el model Usuari per poder interactuar amb la col·lecció de Mongo
+// Importa bcrypt (per xifrar la contrasenya) i el model Usuari
+const bcrypt = require('bcrypt');
 const Usuari = require('../models/Usuari');
 
-// Crea un nou usuari a la base de dades
+// Crea un nou usuari a la base de dades, xifrant la contrasenya abans de guardar-la
 const crearUsuari = async (dades) => {
-  const nouUsuari = new Usuari(dades);
+  const { contrasenya, ...resta } = dades;
+  const passwordHash = await bcrypt.hash(contrasenya, 10);
+  const nouUsuari = new Usuari({ ...resta, passwordHash });
   return await nouUsuari.save();
 };
 
@@ -49,9 +52,14 @@ const obtenirUsuari = async (id) => {
   return await Usuari.findById(id);
 };
 
-// Actualitza un usuari existent amb noves dades
+// Actualitza un usuari existent; si ve una contrasenya nova, la xifra abans de guardar-la
 const actualitzarUsuari = async (id, dades) => {
-  return await Usuari.findByIdAndUpdate(id, dades, { new: true, runValidators: true });
+  const canvis = { ...dades };
+  if (canvis.contrasenya) {
+    canvis.passwordHash = await bcrypt.hash(canvis.contrasenya, 10);
+    delete canvis.contrasenya;
+  }
+  return await Usuari.findByIdAndUpdate(id, canvis, { new: true, runValidators: true });
 };
 
 // Desactiva un usuari (baixa lògica): mai s'esborra el document de debò

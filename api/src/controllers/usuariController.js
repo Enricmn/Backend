@@ -1,5 +1,4 @@
-// Importa bcrypt per xifrar contrasenyes, i el servei que parla amb la base de dades
-const bcrypt = require('bcrypt');
+// Importa el servei, que és qui parla amb la base de dades (i ara també qui xifra la contrasenya)
 const usuariService = require('../services/usuariService');
 
 // POST /api/usuaris - crea un usuari nou
@@ -12,8 +11,7 @@ const crearUsuari = async (req, res, next) => {
       return res.status(422).json({ status: 'error', message: 'la contrasenya ha de tener al menos 12 caracteres' });
     }
 
-    const passwordHash = await bcrypt.hash(contrasenya, 10);
-    const usuari = await usuariService.crearUsuari({ nom, email, passwordHash, rol: 'client', actiu: true });
+    const usuari = await usuariService.crearUsuari({ nom, email, contrasenya, rol: 'client', actiu: true });
     res.status(201).json({ status: 'exito', data: usuari });
   } catch (error) {
     next(error); // passa l'error al gestor centralitzat
@@ -48,12 +46,8 @@ const actualitzarUsuari = async (req, res, next) => {
   try {
     const dades = { ...req.body };
 
-    if (dades.contrasenya) {
-      if (dades.contrasenya.length < 12) {
-        return res.status(422).json({ status: 'error', message: 'la contrasenya ha de tener al menos 12 caracteres' });
-      }
-      dades.passwordHash = await bcrypt.hash(dades.contrasenya, 10);
-      delete dades.contrasenya;
+    if (dades.contrasenya && dades.contrasenya.length < 12) {
+      return res.status(422).json({ status: 'error', message: 'la contrasenya ha de tener al menos 12 caracteres' });
     }
 
     // No es permet canviar el rol des d'aquesta ruta
