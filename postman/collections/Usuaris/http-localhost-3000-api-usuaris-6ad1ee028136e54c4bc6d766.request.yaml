@@ -1,0 +1,17 @@
+$kind: http-request
+name: http://localhost:3000/api/usuaris/6ad1ee028136e54c4bc6d766
+description: ""
+url: http://localhost:3000/api/usuaris/6ad1ee028136e54c4bc6d766
+method: GET
+body:
+  type: json
+  content: "{\r
+
+    \  \"nom\": \"Repetit De Prova\",\r
+
+    \  \"email\": \"pataup.esmolenc@mail-fictici.cat\",\r
+
+    \  \"contrasenya\": \"unaAltraContrasenyaLlarga\"\r
+
+    }"
+order: 4000

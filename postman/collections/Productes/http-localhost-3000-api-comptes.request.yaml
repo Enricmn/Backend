@@ -1,0 +1,29 @@
+$kind: http-request
+name: http://localhost:3000/api/comptes
+description: ""
+url: http://localhost:3000/api/comptes
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"descripcio\": \"Compte amb comandants llegendaris i molt poder\",\r
+
+    \  \"plataforma\": \"iOS\",\r
+
+    \  \"regne\": \"KD1234\",\r
+
+    \  \"poder\": 50000000,\r
+
+    \  \"nivellVIP\": 12,\r
+
+    \  \"numComandantsLlegendaris\": 5,\r
+
+    \  \"preu\": 150,\r
+
+    \  \"categoria\": \"6ad1ee028136e54c4bc6d766\",\r
+
+    \  \"venedor\": \"6ad1ed5fa6f5e98501c9e5bd\"\r
+
+    }"
+order: 1000

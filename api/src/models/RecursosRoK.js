@@ -9,8 +9,14 @@ const recursosRoKSchema = new Schema({
   descripcio: String,
   // Quantitat: número obligatori, com a mínim 1
   quantitat: { type: Number, required: true, min: 1 },
-  // Preu: número obligatori, no pot ser negatiu
-  preu: { type: Number, required: true, min: 0 },
+  // Preu: número obligatori, no pot ser negatiu i com a màxim 2 decimals
+  preu: {
+    type: Number,
+    required: true,
+    min: 0,
+    // Validació personalitzada: si arrodonir a 2 decimals canvia el valor, en té més de 2
+    validate: { validator: (v) => Number(v.toFixed(2)) === v, message: 'El preu pot tenir com a màxim 2 decimals' },
+  },
   // Regne: obligatori, format KD + números (ex: KD1220)
   regne: { type: String, required: true, match: /^KD\d{1,4}$/ },
   // Categoria: guarda l'_id d'una Categoria (relació 1..N); obligatòria

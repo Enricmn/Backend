@@ -13,6 +13,11 @@ const recursosRoutes = require('./routes/recursosRoutes');  // rutes de Recursos
 const botRoutes = require('./routes/botRoutes');             // rutes de BotRoK
 const usuariRoutes = require('./routes/usuariRoutes');       // rutes d'Usuari
 
+const categoriaRoutes = require('./routes/categoriaRoutes');
+
+const notFound = require('./middleware/notFound');
+const errorHandler = require('./middleware/errorHandler');
+
 // Crea l'aplicació Express
 const app = express();
 
@@ -31,6 +36,10 @@ app.use('/api/comptes', compteRoutes);
 app.use('/api/recursos', recursosRoutes);
 app.use('/api/bots', botRoutes);
 app.use('/api/usuaris', usuariRoutes);
+app.use('/api/categories', categoriaRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 // Defineix el port on escoltarà el servidor:
 // agafa el valor de la variable PORT del .env, o fa servir 3000 per defecte si no existeix
@@ -39,3 +48,5 @@ const PORT = process.env.PORT || 3000;
 // Posa el servidor a escoltar peticions al port indicat
 // i mostra un missatge per consola quan arrenca correctament
 app.listen(PORT, () => console.log(`Servidor escoltant al port ${PORT}`));
+
+

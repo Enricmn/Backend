@@ -1,0 +1,33 @@
+$kind: http-request
+name: http://localhost:3000/api/usuaris
+description: ""
+url: http://localhost:3000/api/usuaris
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nom\": \"Pataup Esmolenc\",\r
+
+    \  \"email\": \"pataup.esmolenc2@mail-fictici.cat\",\r
+
+    \  \"contrasenya\": \"unaContrasenyaMoltLlarga123\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code es 201\", () => {\r
+
+      \  pm.response.to.have.status(201);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"La resposta no conte el passwordHash\", () => {\r
+
+      \  pm.expect(pm.response.json().data).to.not.have.property(\"passwordHash\");\r
+
+      });"
+    language: text/javascript
+order: 1000

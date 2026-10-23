@@ -1,0 +1,15 @@
+$kind: http-request
+name: http://localhost:3000/api/categories/6ad1ee028136e54c4bc6d766
+description: ""
+url: http://localhost:3000/api/categories/6ad1ee028136e54c4bc6d766
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \  \"slug\": \"comptes-rok\",\r
+
+    \  \"descripcio\": \"Comptes de Rise of Kingdoms\"\r
+
+    }"
+order: 5000

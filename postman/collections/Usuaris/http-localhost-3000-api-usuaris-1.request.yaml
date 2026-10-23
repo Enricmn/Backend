@@ -1,0 +1,9 @@
+$kind: http-request
+name: http://localhost:3000/api/usuaris
+description: ""
+url: http://localhost:3000/api/usuaris?actiu=true&limit=5
+method: GET
+queryParams:
+  actiu: "true"
+  limit: "5"
+order: 2000

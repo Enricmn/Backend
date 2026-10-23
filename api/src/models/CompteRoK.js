@@ -21,8 +21,11 @@ const compteRoKSchema = new Schema({
   preu: {
     type: Number, // ha de ser un número
     required: true, // no es pot deixar buit
-    // Validació personalitzada: el preu ha de ser major que 0
-    validate: { validator: (v) => v > 0, message: 'El preu ha de ser major que 0' },
+    // Validacions personalitzades: el preu ha de ser major que 0 i tenir com a màxim 2 decimals
+    validate: [
+      { validator: (v) => v > 0, message: 'El preu ha de ser major que 0' },
+      { validator: (v) => Number(v.toFixed(2)) === v, message: 'El preu pot tenir com a màxim 2 decimals' },
+    ],
   },
   // Estat: només "disponible" o "venuda"; si no s'indica, és "disponible"
   estat: { type: String, enum: ['disponible', 'venuda'], default: 'disponible' },

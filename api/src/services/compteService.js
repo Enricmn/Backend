@@ -7,14 +7,14 @@ const crearCompte = async (dades) => {
   return await nouCompte.save(); // la guarda a Mongo i retorna el document creat
 };
 
-// Retorna tots els comptes
+// Retorna tots els comptes, amb la categoria ja "desplegada" (no només el seu id)
 const obtenirComptes = async () => {
-  return await CompteRoK.find(); // find() sense filtres retorna tots els documents
+  return await CompteRoK.find().populate('categoria');
 };
 
-// Retorna un compte concret per id
+// Retorna un compte concret per id, amb la categoria ja "desplegada"
 const obtenirCompte = async (id) => {
-  return await CompteRoK.findById(id); // busca pel seu _id; retorna null si no existeix
+  return await CompteRoK.findById(id).populate('categoria'); // busca pel seu _id; retorna null si no existeix
 };
 
 // Actualitza un compte existent amb noves dades

@@ -1,0 +1,17 @@
+$kind: http-request
+name: http://localhost:3000/api/usuaris
+description: ""
+url: http://localhost:3000/api/usuaris
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nom\": \"Pataup Esmolenc\",\r
+
+    \  \"email\": \"pataup.esmolenc@mail-fictici.cat\",\r
+
+    \  \"contrasenya\": \"curta123\"\r
+
+    }"
+order: 3000

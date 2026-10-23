@@ -11,8 +11,14 @@ const botRoKSchema = new Schema({
   },
   // Descripció: text obligatori
   descripcio: { type: String, required: true },
-  // Preu: número obligatori, no pot ser negatiu
-  preu: { type: Number, required: true, min: 0 },
+  // Preu: número obligatori, no pot ser negatiu i com a màxim 2 decimals
+  preu: {
+    type: Number,
+    required: true,
+    min: 0,
+    // Validació personalitzada: si arrodonir a 2 decimals canvia el valor, en té més de 2
+    validate: { validator: (v) => Number(v.toFixed(2)) === v, message: 'El preu pot tenir com a màxim 2 decimals' },
+  },
   // Categoria: guarda l'_id d'una Categoria (relació 1..N); obligatòria
   categoria: { type: Schema.Types.ObjectId, ref: 'Categoria', required: true },
   // Venedor: guarda l'_id de l'Usuari que el ven (relació 1..N); obligatori

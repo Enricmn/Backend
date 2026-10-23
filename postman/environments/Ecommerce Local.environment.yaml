@@ -1,0 +1,5 @@
+name: Ecommerce Local
+values:
+  - key: baseUrl
+    value: ''
+color: 0

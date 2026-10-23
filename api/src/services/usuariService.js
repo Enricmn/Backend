@@ -3,30 +3,60 @@ const Usuari = require('../models/Usuari');
 
 // Crea un nou usuari a la base de dades
 const crearUsuari = async (dades) => {
-  const nouUsuari = new Usuari(dades); // crea una instància amb les dades rebudes
-  return await nouUsuari.save(); // la guarda a Mongo i retorna el document creat
+  const nouUsuari = new Usuari(dades);
+  return await nouUsuari.save();
 };
 
-// Retorna tots els usuaris
-const obtenirUsuaris = async () => {
-  return await Usuari.find(); // find() sense filtres retorna tots els documents
+// Retorna els usuaris aplicant filtres, ordenació i paginació
+const obtenirUsuaris = async (opcions = {}) => {
+  const { actiu, nom, ordenar, pagina = 1, limit = 10 } = opcions;
+
+  // Construeix el filtre de Mongo a partir dels paràmetres rebuts
+  const filtre = {};
+  if (actiu !== undefined) filtre.actiu = actiu === 'true';
+  if (nom) filtre.nom = new RegExp(nom, 'i'); // cerca parcial, sense distingir majúscules/minúscules
+
+  // Valida que pagina i limit siguin nombres positius (limit màxim 100)
+  const paginaNum = Math.max(1, parseInt(pagina) || 1);
+  const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10));
+
+  // Construeix la consulta i només hi afegeix el sort si realment s'ha demanat
+  let consulta = Usuari.find(filtre);
+  if (ordenar) {
+    consulta = consulta.sort(ordenar);
+  }
+  consulta = consulta.skip((paginaNum - 1) * limitNum).limit(limitNum);
+
+  // Fa la consulta i el recompte total en paral·lel
+  const [usuaris, total] = await Promise.all([
+    consulta,
+    Usuari.countDocuments(filtre),
+  ]);
+
+  return {
+    usuaris,
+    pagination: {
+      total,
+      pagina: paginaNum,
+      limit: limitNum,
+      totalPagines: Math.ceil(total / limitNum),
+    },
+  };
 };
 
 // Retorna un usuari concret per id
 const obtenirUsuari = async (id) => {
-  return await Usuari.findById(id); // busca pel seu _id; retorna null si no existeix
+  return await Usuari.findById(id);
 };
 
 // Actualitza un usuari existent amb noves dades
 const actualitzarUsuari = async (id, dades) => {
-  // { new: true } fa que retorni el document ja actualitzat, no el d'abans
-  // { runValidators: true } fa que les validacions del model (required, unique, enum...) també s'apliquin en actualitzar
   return await Usuari.findByIdAndUpdate(id, dades, { new: true, runValidators: true });
 };
 
-// Elimina un usuari per id
+// Desactiva un usuari (baixa lògica): mai s'esborra el document de debò
 const eliminarUsuari = async (id) => {
-  return await Usuari.findByIdAndDelete(id); // retorna el document eliminat, o null si no existia
+  return await Usuari.findByIdAndUpdate(id, { actiu: false }, { new: true });
 };
 
 // Exporta totes les funcions perquè el controlador les pugui fer servir

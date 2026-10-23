@@ -1,38 +1,60 @@
 E-commerce Full Stack
 
-Tecnologías: Node.js, Express, MongoDB, Docker
+Tecnologías: Node.js, Express, MongoDB, Docker, bcrypt
 
 Autor: Enric Marquès
 
 Descripción
 
-Backend de una aplicación de e-commerce (marketplace de cuentas, recursos y bots de Rise of Kingdoms), desarrollado con Node.js y Express, siguiendo una arquitectura en capas (rutas, controladores, servicios y modelos). Utiliza MongoDB como base de datos, mediante Mongoose. La base de datos se ejecuta en un contenedor Docker, gestionado con Docker Compose, para facilitar su despliegue en cualquier entorno.
+Backend de una aplicación de e-commerce (marketplace de cuentas, recursos y bots de Rise of Kingdoms), desarrollado con Node.js y Express, siguiendo una arquitectura en capas (rutas, controladores, servicios y modelos). Utiliza MongoDB como base de datos, mediante Mongoose. La base de datos se ejecuta en un contenedor Docker, gestionado con Docker Compose, para facilitar su despliegue en cualquier entorno. Las contraseñas de los usuarios se almacenan cifradas con bcrypt, y los errores de la API se gestionan de forma centralizada en un único punto.
 
 Requisitos previos
 Node.js y npm instalados
 Docker Desktop instalado y en ejecución
 Git instalado
+
 Cómo ejecutar el proyecto
+
 Clonar el repositorio: git clone https://github.com/Enricmn/Backend.git
 Entrar en la carpeta del proyecto: cd Backend
-Configurar las credenciales de MongoDB para Docker. Dentro de la carpeta Backend/Docker/, crea un archivo .env (no se sube a GitHub gracias al .gitignore) con estas dos variables, sustituyendo <usuario> y <contraseña> por tus propias credenciales: MONGO_INITDB_ROOT_USERNAME=<usuario>
-MONGO_INITDB_ROOT_PASSWORD=<contraseña> Ejemplo orientativo (no son las credenciales reales del proyecto): MONGO_INITDB_ROOT_USERNAME=usuario_ejemplo
-MONGO_INITDB_ROOT_PASSWORD=contraseña_ejemplo Estas variables las lee el docker-compose.yml para crear el usuario administrador de MongoDB la primera vez que se levanta el contenedor.
-Arrancar MongoDB con Docker Compose. Desde la carpeta Backend/Docker/, ejecuta: cd Docker
-docker compose up -d Esto crea y arranca un contenedor llamado ecommerce-mongo, expuesto en el puerto 27017, con los datos guardados de forma persistente en un volumen Docker (mongo_data), de modo que no se pierden aunque el contenedor se reinicie o se elimine.
-Configurar las variables de entorno de la API. Dentro de la carpeta Backend/api/, crea un archivo .env (tampoco se sube a GitHub) con estas dos variables, usando las mismas credenciales que pusiste en el paso 3: PORT=3000
-MONGO_URI=mongodb://<usuario>:<contraseña>@localhost:27017/ecommerce?authSource=admin Ejemplo orientativo: PORT=3000
+Configurar las credenciales de MongoDB para Docker. Dentro de la carpeta Backend/Docker/, crear un archivo .env (no se sube a GitHub gracias al .gitignore) con estas dos variables, sustituyendo <usuario> y <contraseña> por las credenciales propias:
+MONGO_INITDB_ROOT_USERNAME=<usuario>
+MONGO_INITDB_ROOT_PASSWORD=<contraseña>
+Ejemplo orientativo (no son las credenciales reales del proyecto):
+MONGO_INITDB_ROOT_USERNAME=usuario_ejemplo
+MONGO_INITDB_ROOT_PASSWORD=contraseña_ejemplo
+Estas variables las lee el docker-compose.yml para crear el usuario administrador de MongoDB la primera vez que se levanta el contenedor.
+Arrancar MongoDB con Docker Compose. Desde la carpeta Backend/Docker/, ejecutar:
+cd Docker
+docker compose up -d
+Esto crea y arranca un contenedor llamado ecommerce-mongo, expuesto en el puerto 27017, con los datos guardados de forma persistente en un volumen Docker (mongo_data), de modo que no se pierden aunque el contenedor se reinicie o se elimine.
+Configurar las variables de entorno de la API. Dentro de la carpeta Backend/api/, crear un archivo .env (tampoco se sube a GitHub) con estas dos variables, usando las mismas credenciales del paso 3:
+PORT=3000
+MONGO_URI=mongodb://<usuario>:<contraseña>@localhost:27017/ecommerce?authSource=admin
+Ejemplo orientativo:
+PORT=3000
 MONGO_URI=mongodb://usuario_ejemplo:contraseña_ejemplo@localhost:27017/ecommerce?authSource=admin
-Instalar las dependencias de la API. Desde la carpeta Backend/api/, ejecuta: cd api
+Instalar las dependencias de la API. Desde la carpeta Backend/api/, ejecutar:
+cd api
 npm install
-Arrancar el servidor. Desde la carpeta Backend/api/, ejecuta: npm run dev Si todo va bien, en la consola verás los mensajes “MongoDB connectat correctament” y “Servidor escoltant al port 3000”.
-Comprobar que la API funciona. Abre en el navegador (o con Postman) la siguiente dirección: http://localhost:3000/ Debería responder con el texto “API Ecommerce en marxa 🚀”.
-(Opcional) Comprobar MongoDB con Compass. Puedes verificar la conexión con MongoDB Compass usando la siguiente URI, sustituyendo <usuario> y <contraseña> por tus credenciales: mongodb://<usuario>:<contraseña>@localhost:27017/
+Arrancar el servidor. Desde la carpeta Backend/api/, ejecutar:
+npm run dev
+Si todo va bien, en la consola aparecerán los mensajes “MongoDB connectat correctament” y “Servidor escoltant al port 3000”.
+Comprobar que la API funciona. Abrir en el navegador (o con Postman) la siguiente dirección:
+http://localhost:3000/
+Debería responder con el texto “API Ecommerce en marxa 🚀”.
+(Opcional) Comprobar MongoDB con Compass. Se puede verificar la conexión con MongoDB Compass usando la siguiente URI, sustituyendo <usuario> y <contraseña> por las credenciales:
+mongodb://<usuario>:<contraseña>@localhost:27017/
+
 Endpoints disponibles
 
 La API expone un CRUD completo (crear, consultar, actualizar y eliminar) para estas entidades:
 
 Usuarios: GET /api/usuaris · GET /api/usuaris/:id · POST /api/usuaris · PATCH /api/usuaris/:id · DELETE /api/usuaris/:id
+La contraseña (campo contrasenya en la petición) debe tener mínimo 12 caracteres y nunca se devuelve en las respuestas: se almacena como passwordHash, cifrada con bcrypt. Todo usuario nuevo se crea con rol client, aunque se envíe otro valor en la petición. El DELETE no elimina el usuario, hace una baja lógica (actiu: false). Admite filtros y paginación: ?actiu=true, ?nom=texto, ?ordenar=-campo, ?pagina=1&limit=10.
+
+Categorías: GET /api/categories · GET /api/categories/:id · POST /api/categories · PATCH /api/categories/:id · DELETE /api/categories/:id
+El campo slug debe ser único. Admite los mismos filtros y paginación que usuarios: ?actiu=true, ?nom=texto, ?ordenar=-campo, ?pagina=1&limit=10.
 
 Cuentas de RoK: GET /api/comptes · GET /api/comptes/:id · POST /api/comptes · PATCH /api/comptes/:id · DELETE /api/comptes/:id
 
@@ -40,12 +62,29 @@ Recursos de RoK: GET /api/recursos · GET /api/recursos/:id · POST /api/recurso
 
 Bots de RoK: GET /api/bots · GET /api/bots/:id · POST /api/bots · PATCH /api/bots/:id · DELETE /api/bots/:id
 
+En las cuentas, recursos y bots, el campo categoria se devuelve con los datos completos de la categoría (no solo el id), gracias al uso de populate().
+
+Manejo de errores
+
+Todos los errores de la API se gestionan en un único punto centralizado (middleware/errorHandler.js), que devuelve siempre un formato de respuesta consistente. Códigos de estado utilizados:
+200 / 201 — operación correcta (en el DELETE de usuarios, el 200 indica que se ha desactivado correctamente, no que se haya eliminado)
+204 — recurso eliminado correctamente (categorías, cuentas, recursos y bots); no se devuelve contenido en la respuesta
+400 — id con formato inválido
+404 — recurso no encontrado
+409 — valor duplicado en un campo único (por ejemplo, un email o un slug repetido)
+422 — datos enviados no válidos (falta un campo obligatorio, no cumple el formato, etc.)
+500 — error inesperado del servidor
+
+Pruebas con Postman
+
+La colección de Postman está organizada en tres carpetas (Productes, Categoria, Usuaris) y cuenta con un Environment llamado “Ecommerce Local” con la variable baseUrl. Incluye pruebas automáticas (pm.test) que comprueban códigos de estado, formato de las respuestas y que la contraseña cifrada nunca se expone en las respuestas de usuarios.
+
 Documentación del proyecto
 
-Dentro de la carpeta Docs/ encontrarás:
-
+Dentro de la carpeta Docs/ se encuentra:
 Adrs/: las decisiones de arquitectura tomadas durante el proyecto (ADR-001: elección de la base de datos, ADR-002: estructura del repositorio).
 diagrams/: el diagrama de dominio del proyecto (entidades, atributos y relaciones).
+
 Estructura del proyecto
 
 Backend/
@@ -68,6 +107,9 @@ Backend/
 ├── index.js
 ├── config/
 │ └── db.js
+├── middleware/
+│ ├── errorHandler.js
+│ └── notFound.js
 ├── models/
 │ ├── Usuari.js
 │ ├── Categoria.js
@@ -82,14 +124,17 @@ Backend/
 │ ├── compteRoutes.js
 │ ├── recursosRoutes.js
 │ ├── botRoutes.js
-│ └── usuariRoutes.js
+│ ├── usuariRoutes.js
+│ └── categoriaRoutes.js
 ├── controllers/
 │ ├── compteController.js
 │ ├── recursosController.js
 │ ├── botController.js
-│ └── usuariController.js
+│ ├── usuariController.js
+│ └── categoriaController.js
 └── services/
 ├── compteService.js
 ├── recursosService.js
 ├── botService.js
-└── usuariService.js
+├── usuariService.js
+└── categoriaService.js
